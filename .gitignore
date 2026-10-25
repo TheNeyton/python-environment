@@ -1,17 +1,11 @@
-# Python
 __pycache__/
 *.py[cod]
-
-# Virtual environments
 .venv/
 venv/
 env/
-
-# Local settings and secrets
 .env
 .env.*
-
-# Editor and operating system files
+!.env.example
 .idea/
 .vscode/
 .DS_Store
