@@ -1,5 +1,5 @@
-from db.db import Base, SessionLocal, engine
-from db.models import Book, Category
+from app.db.db import Base, SessionLocal, engine
+from app.db.models import Book, Category
 
 
 def main():

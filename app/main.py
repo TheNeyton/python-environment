@@ -1,23 +1,25 @@
-from db.crud import get_books, get_categories
-from db.db import SessionLocal
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from sqlalchemy import text
+
+from app.api import books, categories
+from app.db.db import engine
 
 
-def main():
-    db = SessionLocal()
-    try:
-        categories = get_categories(db)
-        books = get_books(db)
-
-        print("Книги из PostgreSQL")
-        for category in categories:
-            print(f"\nКатегория: {category.title}")
-            for book in books:
-                if book.category_id == category.id:
-                    print(f"{book.id}. {book.title} — {book.price:.2f} руб.")
-                    print(f"   {book.description}")
-    finally:
-        db.close()
+@asynccontextmanager
+async def lifespan(app):
+    with engine.connect() as connection:
+        connection.execute(text("SELECT 1"))
+    yield
+    engine.dispose()
 
 
-if __name__ == "__main__":
-    main()
+app = FastAPI(title="API книг и категорий", lifespan=lifespan)
+app.include_router(categories.router)
+app.include_router(books.router)
+
+
+@app.get("/health", tags=["health"])
+def health():
+    return {"status": "ok"}
